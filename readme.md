@@ -5,14 +5,14 @@ This repository contains a barebones implementation of remote teleoperation of a
 
 ### Pre-Requisites
 
-- ROS (tested on melodic)
+- ROS (tested on kinetic)
 - Python packages: http
 - JavaScript
 
 
 ### How to Run
 
-Launch multiple terminals/tmux/screen to run these processes independently. This assumes that the ROS master and other robot processes are already running. `index.html` has an example image subscriber and control publisher, feel free to edit as needed.
+Launch multiple terminals/tmux/screen to run these processes independently. This assumes that the ROS master and other robot processes are already running. `index.html` has an example image subscriber and control publisher. Please fill the placeholders for the IP and ROS topic names in `index.html`.
 
 #### 1.
 `python -m http.server <desired_port>`
