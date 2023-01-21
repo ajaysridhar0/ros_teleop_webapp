@@ -9,21 +9,15 @@
     <h1>Remote Teleop</h1>
     <p>take control of me!</p>
     <div>
-        <!-- <canvas id="canvas" width="640" height="480"></canvas> -->
         <img id="image" width="640" height="480">
         <div id="zone_joystick" style="position: relative;"></div>
     </div>
     
 
     <script type="text/javascript">
-        // Import the necessary libraries
-        // var ROSLIB = require('roslib');
-        // var cv = require('opencv4nodejs');
-        
-
         // Connect to the ROS server
         var ros = new ROSLIB.Ros({
-            url : 'ws://10.142.90.225:9090'
+            url : 'ws://<your_ip>:9090'
         });
 
         ros.on('connection', function() {
@@ -41,14 +35,14 @@
         // Create a subscriber for the image topic
         var imageSub = new ROSLIB.Topic({
             ros : ros,
-            name : '/usb_cam/image_raw/compressed',
+            name : '<your_compressed_image_topic>',
             messageType : 'sensor_msgs/CompressedImage'
         });
 
         // Create a publisher for the cmd_vel topic
         var cmdVelPub = new ROSLIB.Topic({
             ros : ros,
-            name : '/cmd_vel_mux/input/teleop',
+            name : '<your_vel_topic>',
             messageType : 'geometry_msgs/Twist'
         });
 
