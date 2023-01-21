@@ -1,0 +1,117 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="styles.css">
+        <script src="https://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.7.3/nipplejs.js"></script>
+        <script async src="https://docs.opencv.org/4.5.4/opencv.js" type="text/javascript"></script>
+    </head>
+   
+    <h1>Remote Teleop</h1>
+    <p>take control of me!</p>
+    <div>
+        <!-- <canvas id="canvas" width="640" height="480"></canvas> -->
+        <img id="image" width="640" height="480">
+        <div id="zone_joystick" style="position: relative;"></div>
+    </div>
+    
+
+    <script type="text/javascript">
+        // Import the necessary libraries
+        // var ROSLIB = require('roslib');
+        // var cv = require('opencv4nodejs');
+        
+
+        // Connect to the ROS server
+        var ros = new ROSLIB.Ros({
+            url : 'ws://10.142.90.225:9090'
+        });
+
+        ros.on('connection', function() {
+            console.log('Connected to websocket server.');
+        });
+
+        ros.on('error', function(error) {
+            console.log('Error connecting to websocket server: ', error);
+        });
+
+        ros.on('close', function() {
+            console.log('Connection to websocket server closed.');
+        });
+
+        // Create a subscriber for the image topic
+        var imageSub = new ROSLIB.Topic({
+            ros : ros,
+            name : '/usb_cam/image_raw/compressed',
+            messageType : 'sensor_msgs/CompressedImage'
+        });
+
+        // Create a publisher for the cmd_vel topic
+        var cmdVelPub = new ROSLIB.Topic({
+            ros : ros,
+            name : '/cmd_vel_mux/input/teleop',
+            messageType : 'geometry_msgs/Twist'
+        });
+
+        // Callback function for the image subscriber
+        imageSub.subscribe(function(message) {
+            document.getElementById('image').src = "data:image/jpg;base64," + message.data;
+            console.log("Received image");
+        });
+
+        move = function (linear, angular) {
+            var twist = new ROSLIB.Message({
+                linear: {
+                    x: linear,
+                    y: 0,
+                    z: 0
+                },
+                angular: {
+                    x: 0,
+                    y: 0,
+                    z: angular
+                }
+            });
+            cmdVelPub.publish(twist);
+        }
+        
+        createJoystick = function () {
+            var options = {
+                zone: document.getElementById('zone_joystick'),
+                threshold: 0.1,
+                position: { left: 50 + '%' },
+                mode: 'static',
+                size: 150,
+                color: '#000000',
+            };
+            manager = nipplejs.create(options);
+
+            linear_speed = 0;
+            angular_speed = 0;
+            
+            manager.on('start', function (event, nipple) {
+                timer = setInterval(function () {
+                    move(linear_speed, angular_speed);
+                }, 25);
+            });
+
+            manager.on('move', function (event, nipple) {
+                max_linear = 0.2; // m/s
+                max_angular = 0.4; // rad/s
+                max_distance = 75.0; // pixels;
+                linear_speed = Math.sin(nipple.angle.radian) * max_linear * nipple.distance/max_distance;
+                        angular_speed = -Math.cos(nipple.angle.radian) * max_angular * nipple.distance/max_distance;
+            });
+
+            manager.on('end', function () {
+                if (timer) {
+                    clearInterval(timer);
+                }
+                self.move(0, 0);
+            });
+        }
+        window.onload = function () {
+            createJoystick();
+        }
+
+    </script>
+</html>
