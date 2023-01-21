@@ -26,4 +26,4 @@ Launch a web browser (tested with Safari, Chrome, Firefox) and navigate to `<rob
 
 
 
-<img src="assets/firstperson.gif" height=200px/>&nbsp;<img src="assets/thirdperson.gif" height=200px/> 
+<img src="assets/teleop.gif" width=75%/>
