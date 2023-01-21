@@ -1,8 +1,0 @@
-# on screen 1
-python -m http.server
-
-# on screen 2
-roslaunch rosbridge_server rosbridge_websocket.launch
-
-# on screen 3
-<any commands you need to launch the robot>
